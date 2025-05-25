@@ -13,3 +13,14 @@ class Task(models.Model):
 
   def __str__(self):
     return self.title + ' - ' + self.user.username
+
+class iom_marcas(models.Model):
+    id_marcas = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+      db_table = 'iom_marcas'
+      
+    def __str__(self):
+        return self.nombre

@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from .models import Task
+from .models import Task, iom_marcas
 
-from .forms import TaskForm
+from .forms import TaskForm, MarcaForm
 
 # Create your views here.
 
@@ -107,3 +107,40 @@ def delete_task(request, task_id):
     if request.method == 'POST':
         task.delete()
         return redirect('tasks')
+    
+@login_required
+def marcas(request):
+    marcas = iom_marcas.objects.all().order_by('id_marcas')
+    if request.method == 'POST':
+        if 'id' in request.POST:
+            marca = get_object_or_404(iom_marcas, pk=request.POST['id'])
+            form = MarcaForm(request.POST, instance=marca)
+        else:
+            form = MarcaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('marcas')
+    else:
+        form = MarcaForm()
+    return render(request, 'marcas.html', {'marcas': marcas, 'form': form})
+
+@login_required
+def editar_marca(request, id_marcas):
+    marca = get_object_or_404(iom_marcas, pk=id_marcas)
+    if request.method == 'POST':
+        form = MarcaForm(request.POST, instance=marca)
+        if form.is_valid():
+            form.save()
+            return redirect('marcas')
+    else:
+        form = MarcaForm(instance=marca)
+    marcas = iom_marcas.objects.all().order_by('id_marcas')
+    return render(request, 'marcas.html', {'marcas': marcas, 'form': form})
+
+@login_required
+def eliminar_marca(request, id_marcas):
+    marca = get_object_or_404(iom_marcas, pk=id_marcas)
+    if request.method == 'POST':
+        marca.delete()
+        return redirect('marcas')
+    return render(request, 'confirmar_eliminar.html', {'marca': marca})
