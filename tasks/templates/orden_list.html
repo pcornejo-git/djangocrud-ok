@@ -10,7 +10,7 @@
     <thead>
       <tr>
         <th>Número</th>
-        <th>Fecha</th>
+        <th>Fecha Orden</th>
         <th>Descripción</th>
         <th>Cortador</th>
         <th>Sucursal</th>
@@ -27,7 +27,7 @@
       {% for orden in ordenes %}
       <tr>
         <td>{{ orden.numero }}</td>
-        <td>{{ orden.fecha_orden_fabricacion }}</td>
+        <td>{{ orden.fecha_orden_fabricacion|date:"d/m/y" }}</td>
         <td>{{ orden.descripcion }}</td>
         <td>{{ orden.id_cortador }}</td>
         <td>{{ orden.id_sucursal }}</td>

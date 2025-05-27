@@ -42,10 +42,10 @@ class OrdenFabricacionEncForm(forms.ModelForm):
             'id_vendedor', 'id_armador', 'id_empacador', 'id_hilos'
         ]
         widgets = {
-            'fecha_orden_fabricacion': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'fecha_corte': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'fecha_armado': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'fecha_embalaje': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'fecha_orden_fabricacion': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+            'fecha_corte': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+            'fecha_armado': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+            'fecha_embalaje': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
             'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
             'info_adicional': forms.TextInput(attrs={'class': 'form-control'}),
             'numero': forms.NumberInput(attrs={'class': 'form-control'}),
