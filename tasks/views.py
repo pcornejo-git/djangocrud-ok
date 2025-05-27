@@ -184,23 +184,71 @@ def sucursal_delete(request, pk):
 
 @login_required
 def orden_list(request):
-    query = request.GET.get('q', '')
+#    query = request.GET.get('q', '')
     ordenes = OrdenFabricacionEnc.objects.all()
-    if query:
-        ordenes = ordenes.filter(
-            Q(id_cortador__nombre__icontains=query) |
-            Q(id_cortador__apellido_paterno_icontains=query) |
-            Q(id_vendedor__nombre__icontains=query) |
-            Q(id_vendedor__apellido_paterno_icontains=query) |
-            Q(id_armador__nombre__icontains=query) |
-            Q(id_armador__apellido_paterno_icontains=query) |
-            Q(id_empacador__nombre__icontains=query) |
-            Q(id_empacador__apellido_paterno_icontains=query) |
-            Q(id_sucursal__nombre__icontains=query) |
-            Q(id_estatus__nombre__icontains=query) |
-            Q(id_hilos__nombre__icontains=query)
-        )
-    return render(request, 'orden_list.html', {'ordenes': ordenes, 'query': query})
+#    if query:
+#        ordenes = ordenes.filter(
+#            Q(id_cortador__nombre__icontains=query) |
+#            Q(id_cortador__apellido_paterno_icontains=query) |
+#            Q(id_vendedor__nombre__icontains=query) |
+#            Q(id_vendedor__apellido_paterno_icontains=query) |
+#            Q(id_armador__nombre__icontains=query) |
+#            Q(id_armador__apellido_paterno_icontains=query) |
+#            Q(id_empacador__nombre__icontains=query) |
+#            Q(id_empacador__apellido_paterno_icontains=query) |
+#            Q(id_sucursal__nombre__icontains=query) |
+#            Q(id_estatus__nombre__icontains=query) |
+#            Q(id_hilos__nombre__icontains=query)
+#        )
+#    return render(request, 'orden_list.html', {'ordenes': ordenes, 'query': query})
+
+    numero = request.GET.get('numero', '')
+    descripcion = request.GET.get('descripcion', '')
+    cortador = request.GET.get('cortador', '')
+    sucursal = request.GET.get('sucursal', '')
+    estatus = request.GET.get('estatus', '')
+    vendedor = request.GET.get('vendedor', '')
+    armador = request.GET.get('armador', '')
+    empacador = request.GET.get('empacador', '')
+    hilos = request.GET.get('hilos', '')
+
+    sort = request.GET.get('sort')
+    if sort:
+        ordenes = ordenes.order_by(sort)
+    else:
+        ordenes = ordenes.order_by('-numero')  # Ordena por defecto por 'numero'    
+    if numero:
+        ordenes = ordenes.filter(numero=numero)
+    if descripcion:
+        ordenes = ordenes.filter(descripcion__icontains=descripcion)
+    if cortador:
+        ordenes = ordenes.filter(id_cortador__nombre__icontains=cortador)
+    if sucursal:
+        ordenes = ordenes.filter(id_sucursal__nombre__icontains=sucursal)
+    if estatus:
+        ordenes = ordenes.filter(id_estatus__nombre__icontains=estatus)
+    if vendedor:
+        ordenes = ordenes.filter(id_vendedor__nombre__icontains=vendedor)
+    if armador:
+        ordenes = ordenes.filter(id_armador__nombre__icontains=armador)
+    if empacador:
+        ordenes = ordenes.filter(id_empacador__nombre__icontains=empacador)
+    if hilos:
+        ordenes = ordenes.filter(id_hilos__nombre__icontains=hilos)
+
+    context = {
+        'ordenes': ordenes,
+        'numero': numero,
+        'descripcion': descripcion,
+        'cortador': cortador,
+        'sucursal': sucursal,
+        'estatus': estatus,
+        'vendedor': vendedor,
+        'armador': armador,
+        'empacador': empacador,
+        'hilos': hilos,
+    }
+    return render(request, 'orden_list.html', context)
 
 @login_required
 def orden_create(request):
@@ -232,3 +280,9 @@ def orden_delete(request, pk):
         orden.delete()
         return redirect('orden_list')
     return render(request, 'orden_confirm_delete.html', {'orden': orden})
+
+
+@login_required
+def orden_print(request, pk):
+    orden = get_object_or_404(OrdenFabricacionEnc, pk=pk)
+    return render(request, 'orden_print.html', {'orden': orden})

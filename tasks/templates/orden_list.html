@@ -2,14 +2,65 @@
 {% block content %}
 <div class="container mt-4">
   <h2>Órdenes de Fabricación</h2>
-  <form method="get" class="mb-3">
+  <!--  <form method="get" class="mb-3">
     <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar por personal, sucursal, estatus o hilos">
   </form>
+-->
+  <form method="get" class="row mb-3">
+    <div class="col">
+      <input type="text" name="numero" value="{{ numero }}" class="form-control" placeholder="N° Orden">
+    </div>
+    <div class="col">
+      <input type="text" name="descripcion" value="{{ descripcion }}" class="form-control" placeholder="Descripción">
+    </div>
+    <div class="col">
+      <input type="text" name="cortador" value="{{ cortador }}" class="form-control" placeholder="Cortador">
+    </div>
+    <div class="col">
+      <input type="text" name="sucursal" value="{{ sucursal }}" class="form-control" placeholder="Sucursal">
+    </div>
+    <div class="col">
+      <input type="text" name="estatus" value="{{ estatus }}" class="form-control" placeholder="Estatus">
+    </div>
+    <div class="col">
+      <input type="text" name="vendedor" value="{{ vendedor }}" class="form-control" placeholder="Vendedor">
+    </div>
+    <div class="col">
+      <input type="text" name="armador" value="{{ armador }}" class="form-control" placeholder="Armador">
+    </div>
+    <div class="col">
+      <input type="text" name="empacador" value="{{ empacador }}" class="form-control" placeholder="Empacador">
+    </div>
+    <div class="col">
+      <input type="text" name="hilos" value="{{ hilos }}" class="form-control" placeholder="Hilos">
+    </div>
+    <div class="col d-flex align-items-end">
+      <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+      <a href="{% url 'orden_list' %}" class="btn btn-secondary">Limpiar</a>
+    </div>
+
+    <!--<div class="col">
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+  </div> -->
+  </form>
+
+
   <a href="{% url 'orden_create' %}" class="btn btn-primary mb-2">Nueva Orden</a>
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Número</th>
+        <th>
+          <a
+            href="?{% for key, value in request.GET.items %}{% if key != 'sort' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}sort={% if request.GET.sort == 'numero' %}-numero{% else %}numero{% endif %}">
+            Número
+            {% if request.GET.sort == '-numero' %}
+            &#9650;
+            {% elif request.GET.sort == 'numero' %}
+            &#9660;
+            {% endif %}
+          </a>
+        </th>
+
         <th>Fecha Orden</th>
         <th>Descripción</th>
         <th>Cortador</th>
@@ -40,6 +91,7 @@
         <td>
           <a href="{% url 'orden_update' orden.pk %}" class="btn btn-sm btn-warning">Editar</a>
           <a href="{% url 'orden_delete' orden.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+          <a href="{% url 'orden_print' orden.pk %}" class="btn btn-sm btn-info" target="_blank">Imprimir</a>
         </td>
       </tr>
       {% endfor %}

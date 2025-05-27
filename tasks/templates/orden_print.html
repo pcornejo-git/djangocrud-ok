@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Previsualización de Orden de Fabricación</h2>
+  <table class="table table-bordered">
+    <tr><th>Número</th><td>{{ orden.numero }}</td></tr>
+    <tr><th>Fecha Orden</th><td>{{ orden.fecha_orden_fabricacion|date:"d/m/Y" }}</td></tr>
+    <tr><th>Descripción</th><td>{{ orden.descripcion }}</td></tr>
+    <tr><th>Cortador</th><td>{{ orden.id_cortador }}</td></tr>
+    <tr><th>Sucursal</th><td>{{ orden.id_sucursal }}</td></tr>
+    <tr><th>Estatus</th><td>{{ orden.id_estatus }}</td></tr>
+    <tr><th>Vendedor</th><td>{{ orden.id_vendedor }}</td></tr>
+    <tr><th>Armador</th><td>{{ orden.id_armador }}</td></tr>
+    <tr><th>Empacador</th><td>{{ orden.id_empacador }}</td></tr>
+    <tr><th>Hilos</th><td>{{ orden.id_hilos }}</td></tr>
+    <tr><th>Activo</th><td>{{ orden.activo|yesno:"Sí,No" }}</td></tr>
+    <!-- Agrega más campos si lo necesitas -->
+  </table>
+  <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+  <a href="{% url 'orden_list' %}" class="btn btn-secondary">Volver</a>
+</div>
+{% endblock %}

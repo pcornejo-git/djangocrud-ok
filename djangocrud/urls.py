@@ -40,4 +40,5 @@ urlpatterns = [
     path('ordenes/nueva/', views.orden_create, name='orden_create'),
     path('ordenes/editar/<int:pk>/', views.orden_update, name='orden_update'),
     path('ordenes/eliminar/<int:pk>/', views.orden_delete, name='orden_delete'),
+    path('ordenes/imprimir/<int:pk>/', views.orden_print, name='orden_print'),
  ]
