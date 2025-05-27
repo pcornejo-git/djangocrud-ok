@@ -1,0 +1,19 @@
+<h1>Sucursales</h1>
+<a href="{% url 'sucursal_create' %}">Nueva Sucursal</a>
+<table>
+    <tr>
+        <th>ID</th><th>Nombre</th><th>Descripción</th><th>Activo</th><th>Acciones</th>
+    </tr>
+    {% for sucursal in sucursales %}
+    <tr>
+        <td>{{ sucursal.id_sucursal }}</td>
+        <td>{{ sucursal.nombre }}</td>
+        <td>{{ sucursal.descripcion }}</td>
+        <td>{{ sucursal.activo }}</td>
+        <td>
+            <a href="{% url 'sucursal_update' sucursal.pk %}">Editar</a>
+            <a href="{% url 'sucursal_delete' sucursal.pk %}">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

@@ -5,9 +5,10 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from .models import Task, iom_marcas
+from .models import Task, iom_marcas, Sucursal, OrdenFabricacionEnc
 
-from .forms import TaskForm, MarcaForm
+from .forms import TaskForm, MarcaForm, SucursalForm,  OrdenFabricacionEncForm
+from django.db.models import Q
 
 # Create your views here.
 
@@ -144,3 +145,90 @@ def eliminar_marca(request, id_marcas):
         marca.delete()
         return redirect('marcas')
     return render(request, 'confirmar_eliminar.html', {'marca': marca})
+
+@login_required
+def sucursal_list(request):
+    sucursales = Sucursal.objects.all()
+    return render(request, 'sucursal_list.html', {'sucursales': sucursales})
+
+@login_required
+def sucursal_create(request):
+    if request.method == 'POST':
+        form = SucursalForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('sucursal_list')
+    else:
+        form = SucursalForm()
+    return render(request, 'sucursal_form.html', {'form': form})
+
+@login_required
+def sucursal_update(request, pk):
+    sucursal = get_object_or_404(Sucursal, pk=pk)
+    if request.method == 'POST':
+        form = SucursalForm(request.POST, instance=sucursal)
+        if form.is_valid():
+            form.save()
+            return redirect('sucursal_list')
+    else:
+        form = SucursalForm(instance=sucursal)
+    return render(request, 'sucursal_form.html', {'form': form})
+
+@login_required
+def sucursal_delete(request, pk):
+    sucursal = get_object_or_404(Sucursal, pk=pk)
+    if request.method == 'POST':
+        sucursal.delete()
+        return redirect('sucursal_list')
+    return render(request, 'sucursal_confirm_delete.html', {'sucursal': sucursal})
+
+@login_required
+def orden_list(request):
+    query = request.GET.get('q', '')
+    ordenes = OrdenFabricacionEnc.objects.all()
+    if query:
+        ordenes = ordenes.filter(
+            Q(id_cortador__nombre__icontains=query) |
+            Q(id_cortador__apellido_paterno_icontains=query) |
+            Q(id_vendedor__nombre__icontains=query) |
+            Q(id_vendedor__apellido_paterno_icontains=query) |
+            Q(id_armador__nombre__icontains=query) |
+            Q(id_armador__apellido_paterno_icontains=query) |
+            Q(id_empacador__nombre__icontains=query) |
+            Q(id_empacador__apellido_paterno_icontains=query) |
+            Q(id_sucursal__nombre__icontains=query) |
+            Q(id_estatus__nombre__icontains=query) |
+            Q(id_hilos__nombre__icontains=query)
+        )
+    return render(request, 'orden_list.html', {'ordenes': ordenes, 'query': query})
+
+@login_required
+def orden_create(request):
+    if request.method == 'POST':
+        form = OrdenFabricacionEncForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('orden_list')
+    else:
+        form = OrdenFabricacionEncForm()
+    return render(request, 'orden_form.html', {'form': form})
+
+@login_required
+def orden_update(request, pk):
+    orden = get_object_or_404(OrdenFabricacionEnc, pk=pk)
+    if request.method == 'POST':
+        form = OrdenFabricacionEncForm(request.POST, instance=orden)
+        if form.is_valid():
+            form.save()
+            return redirect('orden_list')
+    else:
+        form = OrdenFabricacionEncForm(instance=orden)
+    return render(request, 'orden_form.html', {'form': form})
+
+@login_required
+def orden_delete(request, pk):
+    orden = get_object_or_404(OrdenFabricacionEnc, pk=pk)
+    if request.method == 'POST':
+        orden.delete()
+        return redirect('orden_list')
+    return render(request, 'orden_confirm_delete.html', {'orden': orden})

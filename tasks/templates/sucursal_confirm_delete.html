@@ -1,0 +1,7 @@
+<h1>Eliminar Sucursal</h1>
+<p>¿Estás seguro de eliminar la sucursal "{{ sucursal.nombre }}"?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'sucursal_list' %}">Cancelar</a>
+</form>

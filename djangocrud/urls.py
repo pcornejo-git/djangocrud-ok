@@ -32,6 +32,12 @@ urlpatterns = [
     path('marcas/', views.marcas, name='marcas'),
     path('marcas/editar/<int:id_marcas>/', views.editar_marca, name='editar_marca'),
     path('marcas/eliminar/<int:id_marcas>/', views.eliminar_marca, name='eliminar_marca'),
-
-    
-]
+    path('sucursales/', views.sucursal_list, name='sucursal_list'),
+    path('sucursales/nueva/', views.sucursal_create, name='sucursal_create'),
+    path('sucursales/editar/<int:pk>/', views.sucursal_update, name='sucursal_update'),
+    path('sucursales/eliminar/<int:pk>/', views.sucursal_delete, name='sucursal_delete'),
+    path('ordenes/', views.orden_list, name='orden_list'),
+    path('ordenes/nueva/', views.orden_create, name='orden_create'),
+    path('ordenes/editar/<int:pk>/', views.orden_update, name='orden_update'),
+    path('ordenes/eliminar/<int:pk>/', views.orden_delete, name='orden_delete'),
+ ]

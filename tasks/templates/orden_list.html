@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Órdenes de Fabricación</h2>
+  <form method="get" class="mb-3">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar por personal, sucursal, estatus o hilos">
+  </form>
+  <a href="{% url 'orden_create' %}" class="btn btn-primary mb-2">Nueva Orden</a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Fecha</th>
+        <th>Descripción</th>
+        <th>Cortador</th>
+        <th>Sucursal</th>
+        <th>Estatus</th>
+        <th>Vendedor</th>
+        <th>Armador</th>
+        <th>Empacador</th>
+        <th>Hilos</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for orden in ordenes %}
+      <tr>
+        <td>{{ orden.numero }}</td>
+        <td>{{ orden.fecha_orden_fabricacion }}</td>
+        <td>{{ orden.descripcion }}</td>
+        <td>{{ orden.id_cortador }}</td>
+        <td>{{ orden.id_sucursal }}</td>
+        <td>{{ orden.id_estatus }}</td>
+        <td>{{ orden.id_vendedor }}</td>
+        <td>{{ orden.id_armador }}</td>
+        <td>{{ orden.id_empacador }}</td>
+        <td>{{ orden.id_hilos }}</td>
+        <td>{{ orden.activo|yesno:"Sí,No" }}</td>
+        <td>
+          <a href="{% url 'orden_update' orden.pk %}" class="btn btn-sm btn-warning">Editar</a>
+          <a href="{% url 'orden_delete' orden.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
