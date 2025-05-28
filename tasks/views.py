@@ -9,6 +9,10 @@ from .models import Task, iom_marcas, Sucursal, OrdenFabricacionEnc
 
 from .forms import TaskForm, MarcaForm, SucursalForm,  OrdenFabricacionEncForm
 from django.db.models import Q
+import barcode
+from barcode.writer import ImageWriter
+import io
+import base64
 
 # Create your views here.
 
@@ -285,4 +289,10 @@ def orden_delete(request, pk):
 @login_required
 def orden_print(request, pk):
     orden = get_object_or_404(OrdenFabricacionEnc, pk=pk)
-    return render(request, 'orden_print.html', {'orden': orden})
+    # Generar código de barras en memoria
+    buffer = io.BytesIO()
+    barcode_class = barcode.get_barcode_class('code128')
+    barcode_img = barcode_class(str(orden.numero), writer=ImageWriter())
+    barcode_img.write(buffer)
+    barcode_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return render(request, 'orden_print.html', {'orden': orden, 'barcode_base64': barcode_base64})

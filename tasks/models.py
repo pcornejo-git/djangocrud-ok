@@ -51,6 +51,10 @@ class Personal(models.Model):
     id_personal = models.AutoField(primary_key=True, db_column='id_personal')
     nombre = models.CharField(max_length=50)
     apellido_paterno = models.CharField(max_length=50)
+    cortador = models.BooleanField(default=False)  # <-- agrega esta línea
+    vendedor = models.BooleanField(default=False)  # <-- agrega esta línea
+    armador = models.BooleanField(default=False)  # <-- agrega esta línea 
+    empacador = models.BooleanField(default=False)  # <-- agrega esta línea
     # otros campos...
 
     class Meta:

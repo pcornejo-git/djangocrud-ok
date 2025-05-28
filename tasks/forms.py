@@ -59,6 +59,12 @@ class OrdenFabricacionEncForm(forms.ModelForm):
             self.fields[field].queryset = Personal.objects.order_by('nombre', 'apellido_paterno')
             self.fields[field].label_from_instance = lambda obj: f"{obj.nombre} {obj.apellido_paterno}"
             self.fields[field].widget.attrs.update({'class': 'form-select'})
+        # Solo mostrar personas con cortador=True en el campo id_cortador
+        self.fields['id_cortador'].queryset = Personal.objects.filter(cortador=True).order_by('nombre', 'apellido_paterno')
+        self.fields['id_vendedor'].queryset = Personal.objects.filter(vendedor=True).order_by('nombre', 'apellido_paterno')
+        self.fields['id_armador'].queryset = Personal.objects.filter(armador=True).order_by('nombre', 'apellido_paterno')   
+        self.fields['id_empacador'].queryset = Personal.objects.filter(empacador=True).order_by('nombre', 'apellido_paterno')
+        # ...el resto de tu lógica para otros campos...
         self.fields['id_sucursal'].queryset = Sucursal.objects.order_by('nombre')
         self.fields['id_sucursal'].widget.attrs.update({'class': 'form-select'})
         self.fields['id_estatus'].queryset = Estatus.objects.order_by('nombre')
