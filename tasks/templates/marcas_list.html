@@ -2,53 +2,38 @@
 {% load static %}
 {% block content %}
 <div class="container mt-4">
-  <h2>Sucursales</h2>
+  <h2>Marcas</h2>
   <form method="get" class="row mb-3">
     <div class="col">
       <input type="text" name="nombre" value="{{ nombre }}" class="form-control" placeholder="Nombre">
     </div>
-    <div class="col">
-      <input type="text" name="direccion" value="{{ direccion }}" class="form-control" placeholder="Dirección">
-    </div>
-    <div class="col">
-      <input type="text" name="ciudad" value="{{ ciudad }}" class="form-control" placeholder="Ciudad">
-    </div>
-    <div class="col">
-      <input type="text" name="descripcion" value="{{ descripcion }}" class="form-control" placeholder="Descripción">
-    </div>
-    <div class="col">
+   <div class="col">
       <input type="text" name="activo="{{ activo }}" class="form-control" placeholder="Activo">
     </div>
     <div class="col d-flex align-items-end">
       <button type="submit" class="btn btn-primary me-2">Filtrar</button>
-      <a href="{% url 'sucursal_list' %}" class="btn btn-secondary me-2">Limpiar</a>
+      <a href="{% url 'marcas_list' %}" class="btn btn-secondary me-2">Limpiar</a>
       <button type="submit" name="export" value="csv" class="btn btn-success" title="Exportar a Excel">
         <img src="{% static 'excel-icon.png' %}" alt="Excel" style="width:20px;vertical-align:middle;">
       </button>
     </div>
   </form>
 
-  <a href="{% url 'sucursal_create' %}" class="btn btn-primary mb-2">Nueva Sucursal</a>
+  <a href="{% url 'marcas_create' %}" class="btn btn-primary mb-2">Nueva Marca</a>
   <table class="table table-striped">
     <thead>
       <tr>
         <th>Nombre</th>
-        <th>Dirección</th>
-        <th>Ciudad</th>
-        <th>Descripción</th>
         <th>Activo</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
-      {% for sucursal in sucursales %}
+      {% for marcas in marcas %}
       <tr>
-        <td>{{ sucursal.nombre }}</td>
-        <td>{{ sucursal.direccion }}</td>
-        <td>{{ sucursal.ciudad }}</td>
-        <td>{{ sucursal.descripcion }}</td>
+        <td>{{ marcas.nombre }}</td>
         <td>
-            {% if sucursal.activo %}
+            {% if marcas.activo %}
               <span class="badge bg-success">Sí</span>
             {% else %}
               <span class="badge bg-danger">No</span>
@@ -56,8 +41,8 @@
         </td>
         <!-- <th>{{ sucursal.activo|yesno:"Sí,No" }}</th> -->
         <td>
-          <a href="{% url 'sucursal_update' sucursal.pk %}" class="btn btn-sm btn-warning">Editar</a>
-          <a href="{% url 'sucursal_delete' sucursal.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+          <a href="{% url 'marcas_update' marcas.pk %}" class="btn btn-sm btn-warning">Editar</a>
+          <a href="{% url 'marcas_delete' marcas.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
         </td>
       </tr>
       {% endfor %}

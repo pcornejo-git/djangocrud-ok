@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task, iom_marcas, Sucursal, OrdenFabricacionEnc, Personal, Sucursal, Estatus, Hilos
+from .models import Task, Marcas, Sucursal, OrdenFabricacionEnc, Personal, Sucursal, Estatus, Hilos, Proposito
 from django.utils import timezone
 
 class TaskForm(forms.ModelForm):
@@ -12,19 +12,65 @@ class TaskForm(forms.ModelForm):
             'important': forms.CheckboxInput(attrs={'class':'form-check-input m-auto'}),
         }
 
-class MarcaForm(forms.ModelForm):
+class PropositoForm(forms.ModelForm):
     class Meta:
-        model = iom_marcas
+        model = Proposito
         fields = ['nombre', 'activo']
-        widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input m-auto'}),
-        }
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre'].upper()
+        if Proposito.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+            raise forms.ValidationError('El nombre ya existe.')
+        return nombre
+
+class PersonalForm(forms.ModelForm):
+    class Meta:
+        model = Personal
+        fields = ['nombre', 'activo']
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre'].upper()
+        if Marcas.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+            raise forms.ValidationError('El nombre ya existe.')
+        return nombre
+
+class EstatusForm(forms.ModelForm):
+    class Meta:
+        model = Estatus
+        fields = ['nombre', 'activo']
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre'].upper()
+        if Marcas.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+            raise forms.ValidationError('El nombre ya existe.')
+        return nombre
+
+class HilosForm(forms.ModelForm):
+    class Meta:
+        model = Hilos
+        fields = ['nombre', 'activo']
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre'].upper()
+        if Marcas.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+            raise forms.ValidationError('El nombre ya existe.')
+        return nombre
+
+class MarcasForm(forms.ModelForm):
+    class Meta:
+        model = Marcas
+        fields = ['nombre', 'activo']
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre'].upper()
+        if Marcas.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+            raise forms.ValidationError('El nombre ya existe.')
+        return nombre
         
 class SucursalForm(forms.ModelForm):
     class Meta:
         model = Sucursal
-        fields = ['nombre', 'descripcion', 'activo']
+        fields = ['nombre','direccion','ciudad' ,'descripcion', 'activo']
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre'].upper()
@@ -39,7 +85,7 @@ class OrdenFabricacionEncForm(forms.ModelForm):
             'numero', 'fecha_orden_fabricacion', 'descripcion', 'info_adicional',
             'id_cortador', 'fecha_corte', 'fecha_armado', 'fecha_embalaje',
             'id_sucursal', 'id_estatus', 'activo',
-            'id_vendedor', 'id_armador', 'id_empacador', 'id_hilos'
+            'id_vendedor', 'id_armador', 'id_empacador', 'id_hilos','id_proposito'
         ]
         widgets = {
             'fecha_orden_fabricacion': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
@@ -71,4 +117,6 @@ class OrdenFabricacionEncForm(forms.ModelForm):
         self.fields['id_estatus'].widget.attrs.update({'class': 'form-select'})
         self.fields['id_hilos'].queryset = Hilos.objects.order_by('nombre')
         self.fields['id_hilos'].widget.attrs.update({'class': 'form-select'})       
+        self.fields['id_proposito'].queryset = Proposito.objects.order_by('nombre')
+        self.fields['id_proposito'].widget.attrs.update({'class': 'form-select'})       
  

@@ -5,14 +5,16 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from .models import Task, iom_marcas, Sucursal, OrdenFabricacionEnc
+from .models import Task, Marcas, Sucursal, OrdenFabricacionEnc, Proposito,  Personal, Estatus, Hilos
 
-from .forms import TaskForm, MarcaForm, SucursalForm,  OrdenFabricacionEncForm
+from .forms import TaskForm, MarcasForm, SucursalForm, OrdenFabricacionEncForm, PropositoForm, PersonalForm, EstatusForm, HilosForm
 from django.db.models import Q
 import barcode
 from barcode.writer import ImageWriter
 import io
 import base64
+import csv
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -114,46 +116,112 @@ def delete_task(request, task_id):
         return redirect('tasks')
     
 @login_required
-def marcas(request):
-    marcas = iom_marcas.objects.all().order_by('id_marcas')
-    if request.method == 'POST':
-        if 'id' in request.POST:
-            marca = get_object_or_404(iom_marcas, pk=request.POST['id'])
-            form = MarcaForm(request.POST, instance=marca)
-        else:
-            form = MarcaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('marcas')
+def marcas_list(request):
+    marcas = Marcas.objects.all()
+    nombre = request.GET.get('nombre', '')
+    activo = request.GET.get('activo', '')
+    sort = request.GET.get('sort', '')
+    if nombre:
+        marcas = marcas.filter(nombre__icontains=nombre)
+    if activo:
+        marcas = marcas.filter(activo__icontains=activo)
+    if sort:
+        marcas = marcas.order_by(sort)
     else:
-        form = MarcaForm()
-    return render(request, 'marcas.html', {'marcas': marcas, 'form': form})
+        marcas = marcas.order_by('nombre')
+
+    # Exportar a CSV
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="marcas.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Nombre', 'Activo',])
+        for m in marcas:
+            writer.writerow([m.nombre, m.activo])
+        return response
+
+    context = {
+        'marcas': marcas,
+        'activo': activo,
+    }
+    return render(request, 'marcas_list.html', context)
 
 @login_required
-def editar_marca(request, id_marcas):
-    marca = get_object_or_404(iom_marcas, pk=id_marcas)
+def marcas_create(request):
     if request.method == 'POST':
-        form = MarcaForm(request.POST, instance=marca)
+        form = MarcasForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('marcas')
+            return redirect('marcas_list')
     else:
-        form = MarcaForm(instance=marca)
-    marcas = iom_marcas.objects.all().order_by('id_marcas')
-    return render(request, 'marcas.html', {'marcas': marcas, 'form': form})
+        form = MarcasForm()
+    return render(request, 'marcas_form.html', {'form': form})
 
 @login_required
-def eliminar_marca(request, id_marcas):
-    marca = get_object_or_404(iom_marcas, pk=id_marcas)
+def marcas_update(request, pk):
+    marcas = get_object_or_404(Marcas, pk=pk)
     if request.method == 'POST':
-        marca.delete()
-        return redirect('marcas')
-    return render(request, 'confirmar_eliminar.html', {'marca': marca})
+        form = MarcasForm(request.POST, instance=marcas)
+        if form.is_valid():
+            form.save()
+            return redirect('marcas_list')
+    else:
+        form = MarcasForm(instance=marcas)
+    return render(request, 'marcas_form.html', {'form': form})
+
+
+@login_required
+def marcas_delete(request, pk):
+    marcas = get_object_or_404(Marcas, pk=pk)
+    if request.method == 'POST':
+        marcas.delete()
+        return redirect('marcas_list')
+    return render(request, 'marcas_confirm_delete.html', {'marcas': marcas})
+
 
 @login_required
 def sucursal_list(request):
     sucursales = Sucursal.objects.all()
-    return render(request, 'sucursal_list.html', {'sucursales': sucursales})
+    nombre = request.GET.get('nombre', '')
+    direccion = request.GET.get('direccion', '')
+    ciudad = request.GET.get('ciudad', '')
+    activo = request.GET.get('activo', '')
+    descripcion = request.GET.get('descripcion', '')
+    sort = request.GET.get('sort', '')
+    if nombre:
+        sucursales = sucursales.filter(nombre__icontains=nombre)
+    if direccion:
+        sucursales = sucursales.filter(direccion__icontains=direccion)
+    if ciudad:
+        sucursales = sucursales.filter(ciudad__icontains=ciudad)
+    if descripcion:
+        sucursales = sucursales.filter(descripcion__icontains=descripcion)  
+    if activo:
+        sucursales = sucursales.filter(activo__icontains=activo)
+    if sort:
+        sucursales = sucursales.order_by(sort)
+    else:
+        sucursales = sucursales.order_by('nombre')
+
+    # Exportar a CSV
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="sucursales.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Nombre', 'Direccion', 'Ciudad','Descripcion','Activo',])
+        for s in sucursales:
+            writer.writerow([s.nombre, s.direccion, s.ciudad, s.descripcion,s.activo])
+        return response
+
+    context = {
+        'sucursales': sucursales,
+        'nombre': nombre,
+        'direccion': direccion,
+        'ciudad': ciudad,
+        'descripcion': descripcion,
+        'activo': activo,
+    }
+    return render(request, 'sucursal_list.html', context)
 
 @login_required
 def sucursal_create(request):
@@ -215,12 +283,13 @@ def orden_list(request):
     armador = request.GET.get('armador', '')
     empacador = request.GET.get('empacador', '')
     hilos = request.GET.get('hilos', '')
+    proposito = request.GET.get('proposito', '')
 
     sort = request.GET.get('sort')
     if sort:
         ordenes = ordenes.order_by(sort)
     else:
-        ordenes = ordenes.order_by('-numero')  # Ordena por defecto por 'numero'    
+        ordenes = ordenes.order_by('-numero')  # Ordena por defecto por 'numero' descendente    
     if numero:
         ordenes = ordenes.filter(numero=numero)
     if descripcion:
@@ -239,6 +308,8 @@ def orden_list(request):
         ordenes = ordenes.filter(id_empacador__nombre__icontains=empacador)
     if hilos:
         ordenes = ordenes.filter(id_hilos__nombre__icontains=hilos)
+    if proposito:
+        ordenes = ordenes.filter(id_hilos__nombre__icontains=proposito)
 
     context = {
         'ordenes': ordenes,
@@ -251,7 +322,34 @@ def orden_list(request):
         'armador': armador,
         'empacador': empacador,
         'hilos': hilos,
-    }
+        'proposito': proposito,}
+    # Exportar a CSV si se presionó el botón
+    if request.GET.get('export') == 'csv' or request.POST.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="ordenes.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'Numero', 'Fecha Orden', 'Descripcion', 'Cortador', 'Sucursal', 'Estatus',
+            'Vendedor', 'Armador', 'Empacador', 'Hilos','Proposito', 'Activo'
+        ])
+        for orden in ordenes:
+            writer.writerow([
+                orden.numero,
+                orden.fecha_orden_fabricacion.strftime('%d/%m/%Y') if orden.fecha_orden_fabricacion else '',
+                orden.descripcion,
+                str(orden.id_cortador),
+                str(orden.id_sucursal),
+                str(orden.id_estatus),
+                str(orden.id_vendedor),
+                str(orden.id_armador),
+                str(orden.id_empacador),
+                str(orden.id_hilos),
+                str(orden.id_proposito),
+                'Sí' if orden.activo else 'No'
+            ])
+        return response
+
+    # ... tu render habitual ...
     return render(request, 'orden_list.html', context)
 
 @login_required

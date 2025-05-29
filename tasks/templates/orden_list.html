@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <div class="container mt-4">
   <h2>Órdenes de Fabricación</h2>
@@ -34,9 +35,16 @@
     <div class="col">
       <input type="text" name="hilos" value="{{ hilos }}" class="form-control" placeholder="Hilos">
     </div>
+    <div class="col">
+      <input type="text" name="proposito" value="{{ proposito }}" class="form-control" placeholder="Proposito">
+    </div>
+
     <div class="col d-flex align-items-end">
       <button type="submit" class="btn btn-primary me-2">Filtrar</button>
       <a href="{% url 'orden_list' %}" class="btn btn-secondary">Limpiar</a>
+      <button type="submit" name="export" value="csv" class="btn btn-success" title="Exportar a Excel">
+      <img src="{% static 'excel-icon.png' %}" alt="Excel" style="width:20px;vertical-align:middle;">
+      </button>
     </div>
 
     <!--<div class="col">
@@ -70,6 +78,7 @@
         <th>Armador</th>
         <th>Empacador</th>
         <th>Hilos</th>
+        <th>Proposito</th>
         <th>Activo</th>
         <th>Acciones</th>
       </tr>
@@ -87,6 +96,7 @@
         <td>{{ orden.id_armador }}</td>
         <td>{{ orden.id_empacador }}</td>
         <td>{{ orden.id_hilos }}</td>
+        <td>{{ orden.id_proposito }}</td>
         <td>{{ orden.activo|yesno:"Sí,No" }}</td>
         <td>
           <a href="{% url 'orden_update' orden.pk %}" class="btn btn-sm btn-warning">Editar</a>

@@ -15,20 +15,31 @@ class Task(models.Model):
   def __str__(self):
     return self.title + ' - ' + self.user.username
 
-class iom_marcas(models.Model):
-    id_marcas = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100)
+
+class Marcas(models.Model):
+    id_marcas = models.AutoField(primary_key=True, db_column='id_marcas')
+    nombre = models.CharField(max_length=50, unique=True)
     activo = models.BooleanField(default=True)
 
     class Meta:
       db_table = 'iom_marcas'
-      
+    def clean(self):
+        self.nombre = self.nombre.upper()
+        if Marcas.objects.exclude(pk=self.pk).filter(nombre=self.nombre).exists():
+            raise ValidationError({'nombre': 'El nombre ya existe.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.nombre
 
 class Sucursal(models.Model):
     id_sucursal = models.AutoField(primary_key=True, db_column='id_sucursal')
     nombre = models.CharField(max_length=50, unique=True)
+    direccion = models.CharField(max_length=50)
+    ciudad = models.CharField(max_length=20)
     descripcion = models.CharField(max_length=100)
     activo = models.BooleanField(default=True)
   
@@ -55,6 +66,8 @@ class Personal(models.Model):
     vendedor = models.BooleanField(default=False)  # <-- agrega esta línea
     armador = models.BooleanField(default=False)  # <-- agrega esta línea 
     empacador = models.BooleanField(default=False)  # <-- agrega esta línea
+    activo = models.BooleanField(default=True)
+
     # otros campos...
 
     class Meta:
@@ -65,10 +78,19 @@ class Personal(models.Model):
 
 class Estatus(models.Model):
     id_estatus = models.AutoField(primary_key=True, db_column='id_estatus')
-    nombre = models.CharField(max_length=50)
-    # otros campos...
+    nombre = models.CharField(max_length=50, unique=True)
+    activo = models.BooleanField(default=True)
+
     class Meta:
       db_table = 'iom_estatus'
+    def clean(self):
+        self.nombre = self.nombre.upper()
+        if Marcas.objects.exclude(pk=self.pk).filter(nombre=self.nombre).exists():
+            raise ValidationError({'nombre': 'El nombre ya existe.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nombre
@@ -76,6 +98,7 @@ class Estatus(models.Model):
 class Hilos(models.Model):
     id_hilos = models.AutoField(primary_key=True, db_column='id_hilos')
     nombre = models.CharField(max_length=50)
+    activo = models.BooleanField(default=True)
     # otros campos...
 
     class Meta:
@@ -84,9 +107,20 @@ class Hilos(models.Model):
     def __str__(self):
         return self.nombre
 
+class Proposito(models.Model):
+    id_proposito = models.AutoField(primary_key=True, db_column='id_proposito')
+    nombre = models.CharField(max_length=50)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+      db_table = 'iom_proposito'
+
+    def __str__(self):
+        return self.nombre
+
 class OrdenFabricacionEnc(models.Model):
     id_orden_fabricacion = models.AutoField(primary_key=True,db_column='id_orden_fabricacion')
-    numero = models.IntegerField()
+    numero = models.BigIntegerField(unique=True)
     fecha_orden_fabricacion = models.DateField()
     descripcion = models.CharField(max_length=50)
     info_adicional = models.CharField(max_length=100)
@@ -101,6 +135,7 @@ class OrdenFabricacionEnc(models.Model):
     id_armador = models.ForeignKey(Personal, related_name='ordenes_armador', on_delete=models.PROTECT,db_column='id_armador')
     id_empacador = models.ForeignKey(Personal, related_name='ordenes_empacador', on_delete=models.PROTECT,db_column='id_empacador')
     id_hilos = models.ForeignKey(Hilos, on_delete=models.PROTECT,db_column='id_hilos')
+    id_proposito = models.ForeignKey(Proposito, on_delete=models.PROTECT,db_column='id_proposito')
 
     class Meta:
         db_table = 'iom_orden_fabricacion_enc'

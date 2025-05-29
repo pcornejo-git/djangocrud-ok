@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-  <h2>Eliminar Sucursal</h2>
-  <p>¿Estás seguro de eliminar la sucursal <strong>#{{ sucursal.nombre }}</strong>?</p>
+  <h2>Eliminar Marcas</h2>
+  <p>¿Estás seguro de eliminar la marca <strong>#{{ sucursal.nombre }}</strong>?</p>
   <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-    <a href="{% url 'sucursal_list' %}"class="btn btn-secondary">Cancelar</a>
+    <a href="{% url 'marcas_list' %}"class="btn btn-secondary">Cancelar</a>
   </form>
 </div>
 {% endblock %}
-
