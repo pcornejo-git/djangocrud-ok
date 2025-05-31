@@ -118,6 +118,27 @@ class Proposito(models.Model):
     def __str__(self):
         return self.nombre
 
+class Modelos(models.Model):
+    id_modelos = models.AutoField(primary_key=True, db_column='id_modelos')
+    nombre = models.CharField(max_length=50)
+    id_marcas = models.ForeignKey(Marcas, related_name='modelos_marcas', on_delete=models.PROTECT,db_column='id_marcas')
+    fecha_ini = models.SmallIntegerField(default=0)
+    fecha_ter = models.SmallIntegerField(default=0) 
+    activo = models.BooleanField(default=True)
+    num_asientos = models.SmallIntegerField(default=0)
+    num_filas = models.SmallIntegerField(default=0)
+    serie = models.CharField(max_length=20)
+    accesorios = models.CharField(max_length=20, blank=True, null=True)
+    class Meta:
+      db_table = 'iom_modelos'
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.nombre
+
 class OrdenFabricacionEnc(models.Model):
     id_orden_fabricacion = models.AutoField(primary_key=True,db_column='id_orden_fabricacion')
     numero = models.BigIntegerField(unique=True)

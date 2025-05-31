@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" style="max-width: 10cm;">
+  <h2>Modelos de automoviles</h2>
+  <table class="table table-bordered">
+    <tr><th>Modelo</th><td>{{ modelo.nombre }}</td></tr>
+    <tr><th>Marca</th><td>{{ modelo.id_marca }}</td></tr>
+    <tr><th>Fecha Ini</th><td>{{ modelo.fecha_ini|date:"d/m/Y" }}</td></tr>
+    <tr><th>Fecha Ter</th><td>{{ modelo.fecha_ter|date:"d/m/Y" }}</td></tr>
+    <tr><th>Num_asientos</th><td>{{ modelo.fecha_ini }}</td></tr>
+    <tr><th>Num_filas</th><td>{{ modelo.fecha_ter }}</td></tr>
+    <tr><th>Serie</th><td>{{ modelo.serie }}</td></tr>
+    <tr><th>Accesorios</th><td>{{ modelo.accesorios }}</td></tr>
+    <tr><th>Activo</th><td>{{ modelo.activo|yesno:"Sí,No" }}</td></tr>
+    <!-- Agrega más campos si lo necesitas -->
+  </table>
+    <div class="text-center mb-3">
+    <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
+    <a href="{% url 'modelos_list' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}

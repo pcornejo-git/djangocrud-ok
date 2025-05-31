@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from .models import Task, Marcas, Sucursal, OrdenFabricacionEnc, Proposito,  Personal, Estatus, Hilos
+from .models import Task, Marcas, Sucursal, OrdenFabricacionEnc, Proposito,  Personal, Estatus, Hilos, Modelos
 
-from .forms import TaskForm, MarcasForm, SucursalForm, OrdenFabricacionEncForm, PropositoForm, PersonalForm, EstatusForm, HilosForm
+from .forms import TaskForm, MarcasForm, SucursalForm, OrdenFabricacionEncForm, PropositoForm, PersonalForm, EstatusForm, HilosForm, ModelosForm
 from django.db.models import Q
 import barcode
 from barcode.writer import ImageWriter
@@ -254,28 +254,133 @@ def sucursal_delete(request, pk):
         return redirect('sucursal_list')
     return render(request, 'sucursal_confirm_delete.html', {'sucursal': sucursal})
 
+
+@login_required
+def modelos_list(request):
+    modelos = Modelos.objects.all()
+    nombre = request.GET.get('nombre', '')
+    marcas = request.GET.get('marcas', '')
+    activo = request.GET.get('activo', '')
+    fecha_ini = request.GET.get('fecha_ini', '')
+    fecha_ter = request.GET.get('fecha_ter', '')
+    num_asientos = request.GET.get('num_asientos', '')
+    num_filas = request.GET.get('num_filas', '')
+    serie = request.GET.get('serie', '')
+    accesorios = request.GET.get('accesorios', '')
+    sort = request.GET.get('sort')
+
+    if nombre:
+        modelos = modelos.filter(nombre__icontains=nombre)
+    if marcas:
+        modelos = modelos.filter(id_marcas__nombre__icontains=marcas)
+    if num_asientos:
+        modelos = modelos.filter(num_asientos__icontains=num_asientos)
+    if num_filas:
+        modelos = modelos.filter(num_filas__icontains=num_filas)  
+    if serie:
+        modelos = modelos.filter(serie__icontains=num_filas)  
+    if accesorios:
+        modelos = modelos.filter(accesorios__icontains=accesorios)
+    if activo:
+        modelos = modelos.filter(activo__icontains=activo)
+        
+        
+    if sort:
+        modelos = modelos.order_by(sort)
+    else:
+        modelos = modelos.order_by('nombre')
+
+    context = {
+        'modelos': modelos,
+        'nombre': nombre,
+        'marcas': marcas,
+        'fecha_ini': fecha_ini,
+        'fecha_ter': fecha_ter,
+        'num_asientos': num_asientos,
+        'num_filas': num_filas,
+        'serie': serie,
+        'accesorios': accesorios,
+        }
+
+
+    # Exportar a CSV si se presionó el botón
+    if request.GET.get('export') == 'csv' or request.POST.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="modelos.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'Nombre', 'Marcas', 'Fecha_ini','Fecha_ter', 'num_asientos', 'num_filas', 'Serie',
+            'Accesorios', 'Activo'
+        ])
+
+    #    print(modelos)  # Esto mostrará el queryset (no los datos)
+    #    print(list(modelos))  # Esto mostrará la lista de objetos
+    #    for modelo in modelos:
+    #        print(modelo.nombre, modelo.id_marcas, modelo.activo)  # Muestra campos específicos
+        for modelo in modelos:
+            writer.writerow([
+                modelo.nombre,
+                str(modelo.id_marcas),
+                modelo.fecha_ini,
+                modelo.fecha_ter,
+                modelo.num_asientos,
+                modelo.num_filas,
+                modelo.serie,
+                modelo.accesorios,
+                'Sí' if modelo.activo else 'No'
+            ])
+            
+            
+        return response
+    # ... tu render habitual ...
+    return render(request, 'modelos_list.html', context)
+
+@login_required
+def modelos_create(request):
+    if request.method == 'POST':
+        form = ModelosForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('modelos_list')
+    else:
+        form = ModelosForm()
+    return render(request, 'modelos_form.html', {'form': form})
+
+@login_required
+def modelos_update(request, pk):
+    modelos = get_object_or_404(Modelos, pk=pk)
+    if request.method == 'POST':
+        form = ModelosForm(request.POST, instance=modelos)
+        if form.is_valid():
+            form.save()
+            return redirect('modelos_list')
+    else:
+        form = ModelosForm(instance=modelos)
+    return render(request, 'modelos_form.html', {'form': form})
+
+@login_required
+def modelos_delete(request, pk):
+    modelos = get_object_or_404(Modelos, pk=pk)
+    if request.method == 'POST':
+        Modelos.delete()
+        return redirect('modelos_list')
+    return render(request, 'modelos_confirm_delete.html', {'modelos': modelos})
+
+@login_required
+def modelos_print(request, pk):
+    modelos = get_object_or_404(Modelos, pk=pk)
+    if request.method == 'POST':
+        Modelos.delete()
+        return redirect('modelos_list')
+    return render(request, 'modelos_print.html', {'modelos': modelos})
+
+
 @login_required
 def orden_list(request):
-#    query = request.GET.get('q', '')
     ordenes = OrdenFabricacionEnc.objects.all()
-#    if query:
-#        ordenes = ordenes.filter(
-#            Q(id_cortador__nombre__icontains=query) |
-#            Q(id_cortador__apellido_paterno_icontains=query) |
-#            Q(id_vendedor__nombre__icontains=query) |
-#            Q(id_vendedor__apellido_paterno_icontains=query) |
-#            Q(id_armador__nombre__icontains=query) |
-#            Q(id_armador__apellido_paterno_icontains=query) |
-#            Q(id_empacador__nombre__icontains=query) |
-#            Q(id_empacador__apellido_paterno_icontains=query) |
-#            Q(id_sucursal__nombre__icontains=query) |
-#            Q(id_estatus__nombre__icontains=query) |
-#            Q(id_hilos__nombre__icontains=query)
-#        )
-#    return render(request, 'orden_list.html', {'ordenes': ordenes, 'query': query})
-
     numero = request.GET.get('numero', '')
     descripcion = request.GET.get('descripcion', '')
+    info_adicional = request.GET.get('info_adicional', '')
     cortador = request.GET.get('cortador', '')
     sucursal = request.GET.get('sucursal', '')
     estatus = request.GET.get('estatus', '')
@@ -294,6 +399,8 @@ def orden_list(request):
         ordenes = ordenes.filter(numero=numero)
     if descripcion:
         ordenes = ordenes.filter(descripcion__icontains=descripcion)
+    if info_adicional:
+        ordenes = ordenes.filter(info_adicional__icontains=info_adicional)
     if cortador:
         ordenes = ordenes.filter(id_cortador__nombre__icontains=cortador)
     if sucursal:
@@ -309,12 +416,13 @@ def orden_list(request):
     if hilos:
         ordenes = ordenes.filter(id_hilos__nombre__icontains=hilos)
     if proposito:
-        ordenes = ordenes.filter(id_hilos__nombre__icontains=proposito)
+        ordenes = ordenes.filter(id_proposito__nombre__icontains=proposito)
 
     context = {
         'ordenes': ordenes,
         'numero': numero,
         'descripcion': descripcion,
+        'info_adicional': info_adicional,
         'cortador': cortador,
         'sucursal': sucursal,
         'estatus': estatus,
@@ -329,7 +437,7 @@ def orden_list(request):
         response['Content-Disposition'] = 'attachment; filename="ordenes.csv"'
         writer = csv.writer(response)
         writer.writerow([
-            'Numero', 'Fecha Orden', 'Descripcion', 'Cortador', 'Sucursal', 'Estatus',
+            'Numero', 'Fecha Orden', 'Descripcion','Info_adicional', 'Cortador', 'Sucursal', 'Estatus',
             'Vendedor', 'Armador', 'Empacador', 'Hilos','Proposito', 'Activo'
         ])
         for orden in ordenes:
@@ -337,6 +445,7 @@ def orden_list(request):
                 orden.numero,
                 orden.fecha_orden_fabricacion.strftime('%d/%m/%Y') if orden.fecha_orden_fabricacion else '',
                 orden.descripcion,
+                orden.info_adicional,
                 str(orden.id_cortador),
                 str(orden.id_sucursal),
                 str(orden.id_estatus),

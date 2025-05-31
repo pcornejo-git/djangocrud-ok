@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Modelos v2</h2>
+  <form method="get" class="row mb-3">
+    <div class="col">
+      <input type="text" name="nombre" value="{{ nombre }}" class="form-control" placeholder="Nombre">
+    </div>
+    <div class="col">
+      <input type="text" name="marcas" value="{{ marcas }}" class="form-control" placeholder="Marcas">
+    </div>
+    <div class="col">
+      <input type="text" name="num_asientos" value="{{ num_asientos }}" class="form-control" placeholder="num_asientos">
+    </div>
+    <div class="col">
+      <input type="text" name="num_filas" value="{{ num_filas }}" class="form-control" placeholder="num_filas">
+    </div>
+    <div class="col">
+      <input type="text" name="serie" value="{{ serie }}" class="form-control" placeholder="Serie">
+    </div>
+    <div class="col">
+      <input type="text" name="accesorios" value="{{ accesorios }}" class="form-control" placeholder="Accesorios">
+    </div>
+    <div class="col d-flex align-items-end">
+      <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+        <a href="{% url 'modelos_list' %}" class="btn btn-secondary">Limpiar</a>
+      <button type="submit" name="export" value="csv" class="btn btn-success" title="Exportar a Excel">
+        <img src="{% static 'excel-icon.png' %}" alt="Excel" style="width:20px;vertical-align:middle;">
+      </button>
+    </div>
+  </form>
+
+
+  <a href="{% url 'modelos_create' %}" class="btn btn-primary mb-2">Nuevo Modelo</a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>
+          <a
+            href="?{% for key, value in request.GET.items %}{% if key != 'sort' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}sort={% if request.GET.sort == 'nombre' %}-nombre{% else %}nombre{% endif %}">
+            Nombre
+            {% if request.GET.sort == '-nombre' %}
+            &#9650;
+            {% elif request.GET.sort == 'nombre' %}
+            &#9660;
+            {% endif %}
+          </a>
+        </th>
+
+        <th>Marcas</th>
+        <th>Fecha_ini</th>
+        <th>Fecha_ter</th>
+        <th>Num_asientos</th>
+        <th>Num_filas</th>
+        <th>Serie</th>
+        <th>Accesorios</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for modelo in modelos %}
+      <tr>
+        <td>{{ modelo.nombre }}</td>
+        <td>{{ modelo.id_marcas }}</td>
+        <td>{{ modelo.fecha_ini }}</td>
+        <td>{{ modelo.fecha_ter }}</td>
+        <td>{{ modelo.num_asientos }}</td>
+        <td>{{ modelo.num_filas }}</td>
+        <td>{{ modelo.serie }}</td>
+        <td>{{ modelo.accesorios }}</td>
+        <td>{{ modelo.activo|yesno:"Sí,No" }}</td>
+        <td>
+          <a href="{% url 'modelos_update' modelo.pk %}" class="btn btn-sm btn-warning">Editar</a>
+          <a href="{% url 'modelos_delete' modelo.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+        <!--  <a href="{% url 'modelos_print' modelo.pk %}" class="btn btn-sm btn-info" target="_blank">Imprimir</a> -->
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

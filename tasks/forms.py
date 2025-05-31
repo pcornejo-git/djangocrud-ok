@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task, Marcas, Sucursal, OrdenFabricacionEnc, Personal, Sucursal, Estatus, Hilos, Proposito
+from .models import Task, Marcas, Sucursal, OrdenFabricacionEnc, Personal, Sucursal, Estatus, Hilos, Proposito, Modelos
 from django.utils import timezone
 
 class TaskForm(forms.ModelForm):
@@ -77,6 +77,39 @@ class SucursalForm(forms.ModelForm):
         if Sucursal.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
             raise forms.ValidationError('El nombre ya existe.')
         return nombre
+
+class ModelosForm(forms.ModelForm):
+    class Meta:
+        model = Modelos
+        fields = ['nombre','id_marcas','activo' ,
+                  'fecha_ini', 'fecha_ter', 'num_asientos',
+                  'num_filas', 'serie', 'accesorios']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'id_marcas': forms.Select(attrs={'class': 'form-select'}),
+            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'fecha_ini': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fecha_ter': forms.NumberInput(attrs={'class': 'form-control'}),
+            'num_asientos': forms.NumberInput(attrs={'class': 'form-control'}),
+            'num_filas': forms.NumberInput(attrs={'class': 'form-control'}),
+            'serie': forms.TextInput(attrs={'class': 'form-control'}),
+            'accesorios': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Personaliza los queryset para búsqueda por nombre y apellido
+        for field in ['id_marcas']:
+            self.fields[field].queryset = Marcas.objects.order_by('nombre')
+            self.fields[field].label_from_instance = lambda obj: f"{obj.nombre}"
+            self.fields[field].widget.attrs.update({'class': 'form-select'})
+    
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre'].upper()
+        if Modelos.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+            raise forms.ValidationError('El nombre ya existe.')
+        return nombre
+
     
 class OrdenFabricacionEncForm(forms.ModelForm):
     class Meta:
