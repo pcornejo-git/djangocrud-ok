@@ -143,6 +143,7 @@ class OrdenFabricacionEnc(models.Model):
     id_orden_fabricacion = models.AutoField(primary_key=True,db_column='id_orden_fabricacion')
     numero = models.BigIntegerField(unique=True)
     fecha_orden_fabricacion = models.DateField()
+    id_modelo = models.ForeignKey(Modelos, on_delete=models.PROTECT,db_column='id_modelos')  
     descripcion = models.CharField(max_length=50)
     info_adicional = models.CharField(max_length=100)
     id_cortador = models.ForeignKey(Personal, related_name='ordenes_cortador', on_delete=models.PROTECT,db_column='id_cortador')

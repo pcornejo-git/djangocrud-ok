@@ -12,6 +12,9 @@
       <input type="text" name="numero" value="{{ numero }}" class="form-control" placeholder="N° Orden">
     </div>
     <div class="col">
+      <input type="text" name="modelo" value="{{ modelo }}" class="form-control" placeholder="Modelo">
+    </div>
+    <div class="col">
       <input type="text" name="descripcion" value="{{ descripcion }}" class="form-control" placeholder="Descripción">
     </div>
     <div class="col">
@@ -70,6 +73,10 @@
         </th>
 
         <th>Fecha Orden</th>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th>Año Ini</th>
+        <th>Año Ter</th>
         <th>Descripción</th>
         <th>Cortador</th>
         <th>Sucursal</th>
@@ -88,6 +95,10 @@
       <tr>
         <td>{{ orden.numero }}</td>
         <td>{{ orden.fecha_orden_fabricacion|date:"d/m/y" }}</td>
+        <td>{{ orden.id_modelo.id_marcas.nombre }}</td>
+        <td>{{ orden.id_modelo }}</td>
+        <td>{{ orden.id_modelo.fecha_ini }}</td>
+        <td>{{ orden.id_modelo.fecha_ter }}</td>
         <td>{{ orden.descripcion }}</td>
         <td>{{ orden.id_cortador }}</td>
         <td>{{ orden.id_sucursal }}</td>

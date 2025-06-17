@@ -379,6 +379,7 @@ def modelos_print(request, pk):
 def orden_list(request):
     ordenes = OrdenFabricacionEnc.objects.all()
     numero = request.GET.get('numero', '')
+    modelo = request.GET.get('modelo', '')
     descripcion = request.GET.get('descripcion', '')
     info_adicional = request.GET.get('info_adicional', '')
     cortador = request.GET.get('cortador', '')
@@ -397,6 +398,8 @@ def orden_list(request):
         ordenes = ordenes.order_by('-numero')  # Ordena por defecto por 'numero' descendente    
     if numero:
         ordenes = ordenes.filter(numero=numero)
+    if modelo:
+        ordenes = ordenes.filter(id_modelo__nombre__icontains=modelo)
     if descripcion:
         ordenes = ordenes.filter(descripcion__icontains=descripcion)
     if info_adicional:
@@ -421,6 +424,7 @@ def orden_list(request):
     context = {
         'ordenes': ordenes,
         'numero': numero,
+        'modelo': modelo,
         'descripcion': descripcion,
         'info_adicional': info_adicional,
         'cortador': cortador,
@@ -437,13 +441,14 @@ def orden_list(request):
         response['Content-Disposition'] = 'attachment; filename="ordenes.csv"'
         writer = csv.writer(response)
         writer.writerow([
-            'Numero', 'Fecha Orden', 'Descripcion','Info_adicional', 'Cortador', 'Sucursal', 'Estatus',
+            'Numero', 'Fecha Orden', 'Modelo','Descripcion','Info_adicional', 'Cortador', 'Sucursal', 'Estatus',
             'Vendedor', 'Armador', 'Empacador', 'Hilos','Proposito', 'Activo'
         ])
         for orden in ordenes:
             writer.writerow([
                 orden.numero,
                 orden.fecha_orden_fabricacion.strftime('%d/%m/%Y') if orden.fecha_orden_fabricacion else '',
+                str(orden.id_modelo),
                 orden.descripcion,
                 orden.info_adicional,
                 str(orden.id_cortador),
@@ -453,7 +458,7 @@ def orden_list(request):
                 str(orden.id_armador),
                 str(orden.id_empacador),
                 str(orden.id_hilos),
-                str(orden.id_proposito),
+                str(orden.id_proposito_id),
                 'Sí' if orden.activo else 'No'
             ])
         return response

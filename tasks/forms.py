@@ -115,7 +115,7 @@ class OrdenFabricacionEncForm(forms.ModelForm):
     class Meta:
         model = OrdenFabricacionEnc
         fields = [
-            'numero', 'fecha_orden_fabricacion', 'descripcion', 'info_adicional',
+            'numero', 'fecha_orden_fabricacion', 'id_modelo','descripcion', 'info_adicional',
             'id_cortador', 'fecha_corte', 'fecha_armado', 'fecha_embalaje',
             'id_sucursal', 'id_estatus', 'activo',
             'id_vendedor', 'id_armador', 'id_empacador', 'id_hilos','id_proposito'
@@ -144,6 +144,8 @@ class OrdenFabricacionEncForm(forms.ModelForm):
         self.fields['id_armador'].queryset = Personal.objects.filter(armador=True).order_by('nombre', 'apellido_paterno')   
         self.fields['id_empacador'].queryset = Personal.objects.filter(empacador=True).order_by('nombre', 'apellido_paterno')
         # ...el resto de tu lógica para otros campos...
+        self.fields['id_modelo'].queryset = Modelos.objects.order_by('nombre')
+        self.fields['id_modelo'].widget.attrs.update({'class': 'form-select'})
         self.fields['id_sucursal'].queryset = Sucursal.objects.order_by('nombre')
         self.fields['id_sucursal'].widget.attrs.update({'class': 'form-select'})
         self.fields['id_estatus'].queryset = Estatus.objects.order_by('nombre')

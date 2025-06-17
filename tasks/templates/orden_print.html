@@ -7,6 +7,8 @@
     <tr><th>Número</th><td>{{ orden.numero }}</td></tr>
     <tr><th>Sucursal</th><td>{{ orden.id_sucursal }}</td></tr>
     <tr><th>Propósito</th><td>{{ orden.id_proposito }}</td></tr>
+    <tr><th>Marca</th><td>{{ orden.id_modelo.id_marcas.nombre }}</td></tr>
+    <tr><th>Modelo</th><td>{{ orden.id_modelo }}</td></tr>
     <tr><th>Descripción</th><td>{{ orden.descripcion }}</td></tr>
     <tr><th>Info Adicional</th><td>{{ orden.info_adicional }}</td></tr>
     <tr><th>Hilos</th><td>{{ orden.id_hilos }}</td></tr>
