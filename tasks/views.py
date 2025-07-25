@@ -178,6 +178,173 @@ def marcas_delete(request, pk):
         return redirect('marcas_list')
     return render(request, 'marcas_confirm_delete.html', {'marcas': marcas})
 
+@login_required
+def hilos_list(request):
+    hilos = Hilos.objects.all()
+    nombre = request.GET.get('nombre', '')
+    color = request.GET.get('color', '')
+    descripcion = request.GET.get('descripcion', '')
+    activo = request.GET.get('activo', '')
+    sort = request.GET.get('sort', '')
+    if nombre:
+        hilos = hilos.filter(nombre__icontains=nombre)
+    if color:
+        hilos = hilos.filter(activo__icontains=color)
+    if descripcion:
+        hilos = hilos.filter(activo__icontains=descripcion)
+    if activo:
+        hilos = hilos.filter(activo__icontains=activo)
+    if sort:
+        hilos = hilos.order_by(sort)
+    else:
+        hilos = hilos.order_by('nombre')
+
+    # Exportar a CSV
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="hilos.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Nombre', 'Color', 'Descripcion', 'Activo',])
+        for h in hilos:
+            writer.writerow([h.nombre, h.color, h.descripcion, h.activo])
+        return response
+
+    context = {
+        'hilos': hilos,
+        'nombre': nombre,
+        'color': color,
+        'descripcion': descripcion,
+        'activo': activo,
+    }
+    return render(request, 'hilos_list.html', context)
+
+@login_required
+def hilos_create(request):
+    if request.method == 'POST':
+        form = HilosForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('hilos_list')
+    else:
+        form = HilosForm()
+    return render(request, 'hilos_form.html', {'form': form})
+
+@login_required
+def hilos_update(request, pk):
+    hilos = get_object_or_404(Hilos, pk=pk)
+    if request.method == 'POST':
+        form = HilosForm(request.POST, instance=hilos)
+        if form.is_valid():
+            form.save()
+            return redirect('hilos_list')
+    else:
+        form = HilosForm(instance=hilos)
+    return render(request, 'hilos_form.html', {'form': form})
+
+
+@login_required
+def hilos_delete(request, pk):
+    hilos = get_object_or_404(hilos, pk=pk)
+    if request.method == 'POST':
+        hilos.delete()
+        return redirect('hilos_list')
+    return render(request, 'hilos_confirm_delete.html', {'hilos': hilos})
+
+@login_required
+def personal_list(request):
+    personal = Personal.objects.all()
+    nickname = request.GET.get('nickname', '')
+    nombre = request.GET.get('nombre', '')
+    apellido_paterno = request.GET.get('apellido_paterno', '')
+    apellido_materno = request.GET.get('apellido_materno', '')
+    fecha_nacimiento = request.GET.get('fecha_nacimiento', '')
+    vendedor = request.GET.get('vendedor', '')
+    armador = request.GET.get('armador', '')
+    empacador = request.GET.get('empacador', '')
+    cortador = request.GET.get('cortador', '')
+    activo = request.GET.get('activo', '')
+    sort = request.GET.get('sort', '')
+    if nickname:
+        personal = personal.filter(nombre__icontains=nickname)
+    if nombre:
+        personal = personal.filter(nombre__icontains=nombre)
+    if apellido_paterno:
+        personal = personal.filter(activo__icontains=apellido_paterno)
+    if apellido_materno:
+        personal = personal.filter(activo__icontains=apellido_materno)
+    if fecha_nacimiento:
+        personal = personal.filter(activo__icontains=fecha_nacimiento)
+    if vendedor:
+        personal = personal.filter(activo__icontains=vendedor)
+    if armador:
+        personal = personal.filter(activo__icontains=armador)
+    if empacador:
+        personal = personal.filter(activo__icontains=empacador)
+    if cortador:
+        personal = personal.filter(activo__icontains=cortador)
+    if activo:
+        personal = personal.filter(activo__icontains=activo)
+    if sort:
+        personal = personal.order_by(sort)
+    else:
+        personal = personal.order_by('nombre')
+
+    # Exportar a CSV
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="Personal.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Nombre', 'Nickname', 'Apellido_paterno', 'Apellido_materno', 'Fecha_nacimiento', 'Vendedor', 'Armador', 'Empacador', 'Cortador', 'Activo',])
+        for p in personal:
+            writer.writerow([p.nombre, p.nickname, p.apellido_paterno, p.apellido_materno, p.fecha_nacimiento, p.vendedor, p.armador, p.empacador, p.cortador, p.activo])
+        return response
+
+    context = {
+        'personal': personal,
+        'nombre': nombre,
+        'nickname': nickname,
+        'apellido_paterno': apellido_paterno,
+        'apellido_materno': apellido_materno,
+        'fecha_nacimiento': fecha_nacimiento,
+        'vendedor': vendedor,
+        'armador': armador,
+        'empacador': empacador,
+        'cortador': cortador,
+        'activo': activo,
+    }
+    return render(request, 'personal_list.html', context)
+
+@login_required
+def personal_create(request):
+    if request.method == 'POST':
+        form = PersonalForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('personal_list')
+    else:
+        form = PersonalForm()
+    return render(request, 'personal_form.html', {'form': form})
+
+@login_required
+def personal_update(request, pk):
+    personal = get_object_or_404(Personal, pk=pk)
+    if request.method == 'POST':
+        form = PersonalForm(request.POST, instance=personal)
+        if form.is_valid():
+            form.save()
+            return redirect('personal_list')
+    else:
+        form = PersonalForm(instance=personal)
+    return render(request, 'personal_form.html', {'form': form})
+
+
+@login_required
+def personal_delete(request, pk):
+    personal = get_object_or_404(personal, pk=pk)
+    if request.method == 'POST':
+        personal.delete()
+        return redirect('personal_list')
+    return render(request, 'personal_confirm_delete.html', {'personal': personal})
 
 @login_required
 def sucursal_list(request):

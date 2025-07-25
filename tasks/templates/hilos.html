@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<main class="container py-5">
+  <section class="card card-body">
+    <h1 class="display-4 text-center">Mantenedor de Hilos</h1>
+    <p class="text-center">
+      Este es la pantalla de mantenedor de hilos, la idea es que tenga las funcionalidades CRUD.
+    </p>
+
+    <!-- Formulario para crear/editar hilo -->
+    <div class="mb-4">
+      <h5>{% if form.instance.pk %}Editar Hilos{% else %}Agregar Hilos{% endif %}</h5>
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-5 mb-2">
+            {{ form.nombre.label_tag }} {{ form.nombre }}
+          </div>
+          <div class="col-md-5 mb-2">
+            {{ form.color.label_tag }} {{ form.color }}
+          </div>
+          <div class="col-md-5 mb-2">
+            {{ form.descripcion.label_tag }} {{ form.descripcion }}
+          </div>
+          <div class="col-md-3 mb-2">
+            {{ form.activo.label_tag }} {{ form.activo }}
+          </div>
+          <div class="col-md-4 mb-2">
+            <button type="submit" class="btn btn-success">
+              {% if form.instance.pk %}Actualizar{% else %}Agregar{% endif %}
+            </button>
+            {% if form.instance.pk %}
+              <a href="{% url 'hilos' %}" class="btn btn-secondary">Cancelar</a>
+            {% endif %}
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla de hilos -->
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Color</th>
+            <th>Descripción</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for hilo in hilos %}
+          <tr>
+            <td>{{ hilo.id_hilos }}</td>
+            <td>{{ hilo.nombre }}</td>
+            <td>{{ hilo.color }}</td>
+            <td>{{ hilo.descripcion }}</td>
+            <td>
+              {% if hilo.activo %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'editar_hilo' hilo.id_hilos %}" class="btn btn-sm btn-primary">Editar</a>
+              <form action="{% url 'eliminar_hilo' hilo.id_hilos %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este hilo?');">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center">No hay hilos registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

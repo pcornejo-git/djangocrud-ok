@@ -26,11 +26,11 @@ class PropositoForm(forms.ModelForm):
 class PersonalForm(forms.ModelForm):
     class Meta:
         model = Personal
-        fields = ['nombre', 'activo']
+        fields = ['nombre', 'nickname', 'apellido_paterno', 'apellido_materno', 'fecha_nacimiento', 'vendedor', 'armador', 'empacador', 'cortador', 'activo']
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre'].upper()
-        if Marcas.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
+        if Personal.objects.exclude(pk=self.instance.pk).filter(nombre=nombre).exists():
             raise forms.ValidationError('El nombre ya existe.')
         return nombre
 
@@ -48,7 +48,7 @@ class EstatusForm(forms.ModelForm):
 class HilosForm(forms.ModelForm):
     class Meta:
         model = Hilos
-        fields = ['nombre', 'activo']
+        fields = ['nombre', 'color', 'descripcion', 'activo']
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre'].upper()

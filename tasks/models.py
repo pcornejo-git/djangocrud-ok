@@ -61,7 +61,11 @@ class Sucursal(models.Model):
 class Personal(models.Model):
     id_personal = models.AutoField(primary_key=True, db_column='id_personal')
     nombre = models.CharField(max_length=50)
+    nickname = models.CharField(max_length=50, unique=True)
     apellido_paterno = models.CharField(max_length=50)
+    apellido_materno = models.CharField(max_length=50, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)  # <-- agrega esta línea
+    # Agrega los campos booleanos para los roles
     cortador = models.BooleanField(default=False)  # <-- agrega esta línea
     vendedor = models.BooleanField(default=False)  # <-- agrega esta línea
     armador = models.BooleanField(default=False)  # <-- agrega esta línea 
@@ -98,6 +102,8 @@ class Estatus(models.Model):
 class Hilos(models.Model):
     id_hilos = models.AutoField(primary_key=True, db_column='id_hilos')
     nombre = models.CharField(max_length=50)
+    color = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=100)
     activo = models.BooleanField(default=True)
     # otros campos...
 

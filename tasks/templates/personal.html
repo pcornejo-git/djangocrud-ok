@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<main class="container py-5">
+  <section class="card card-body">
+    <h1 class="display-4 text-center">Mantenedor de Personal</h1>
+    <p class="text-center">
+      Este es la pantalla de mantenedor de personal, la idea es que tenga las funcionalidades CRUD.
+    </p>
+
+    <!-- Formulario para crear/editar personal -->
+    <div class="mb-4">
+      <h5>{% if form.instance.pk %}Editar Personal{% else %}Agregar Personal{% endif %}</h5>
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-5 mb-2">
+            {{ form.nombre.label_tag }} {{ form.nombre }}
+          </div>
+          <div class="col-md-5 mb-2">
+            {{ form.nickname.label_tag }} {{ form.nickname }}
+          </div>
+          <div class="col-md-5 mb-2">
+            {{ form.apellido_paterno.label_tag }} {{ form.apellido_paterno }}
+          </div>
+          <div class="col-md-5 mb-2">
+            {{ form.apellido_materno.label_tag }} {{ form.apellido_materno }} 
+          </div>
+          <div class="col-md-5 mb-2">
+            {{ form.fecha_nacimiento.label_tag }} {{ form.fecha_nacimiento }} 
+          </div>
+          <div class="col-md-3 mb-2">
+            {{ form.vendedor.label_tag }} {{ form.vendedor }} 
+          </div>
+          <div class="col-md-3 mb-2">
+            {{ form.armador.label_tag }} {{ form.armador }} 
+          </div>
+          <div class="col-md-3 mb-2">
+            {{ form.empacador.label_tag }} {{ form.empacador }} 
+          </div>
+          <div class="col-md-3 mb-2">
+            {{ form.cortador.label_tag }} {{ form.cortador }} 
+          </div>
+          <div class="col-md-3 mb-2">
+            {{ form.activo.label_tag }} {{ form.activo }}
+          </div>
+          <div class="col-md-4 mb-2">
+            <button type="submit" class="btn btn-success">
+              {% if form.instance.pk %}Actualizar{% else %}Agregar{% endif %}
+            </button>
+            {% if form.instance.pk %}
+              <a href="{% url 'personal' %}" class="btn btn-secondary">Cancelar</a>
+            {% endif %}
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla de personal -->
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Nickname</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>Fecha Nacimiento</th>
+            <th>Vendedor</th>
+            <th>Armador</th>
+            <th>Empacador</th>
+            <th>Cortador</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for persona in personal %}
+          <tr>
+            <td>{{ persona.id_personal }}</td>
+            <td>{{ persona.nombre }}</td>
+            <td>{{ persona.nickname }}</td>
+            <td>{{ persona.apellido_paterno }}</td>
+            <td>{{ persona.apellido_materno }}</td>
+            <td>{{ persona.fecha_nacimiento|date:"d/m/y" }}</td>
+            <td>
+              {% if persona.vendedor %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %} 
+            </td>
+            <td>
+              {% if persona.armador %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %} 
+            </td>
+            <td>
+              {% if persona.empacador %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if persona.cortador %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %} 
+            </td>
+            <td>
+              {% if persona.activo %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'editar_persona' persona.id_personal %}" class="btn btn-sm btn-primary">Editar</a>
+              <form action="{% url 'eliminar_persona' persona.id_personal %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta persona?');">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center">No hay personal registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

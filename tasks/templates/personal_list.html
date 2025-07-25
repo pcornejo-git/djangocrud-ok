@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Personal</h2>
+  <form method="get" class="row mb-3">
+    <div class="col">
+      <input type="text" name="nombre" value="{{ nombre }}" class="form-control" placeholder="Nombre">
+    </div>
+    <div class="col">
+      <input type="text" name="nickname" value="{{ nickname }}" class="form-control" placeholder="Nickname">
+    </div>
+    <div class="col">
+      <input type="text" name="apellido_paterno" value="{{ apellido_paterno }}" class="form-control" placeholder="Apellido_paterno">
+    </div>
+    <div class="col">
+      <input type="text" name="apellido_materno" value="{{ apellido_materno }}" class="form-control" placeholder="Apellido_materno">  
+    </div>
+    <div class="col">
+      <input type="date" name="fecha_nacimiento" value="{{ fecha_nacimiento }}" class="form-control" placeholder="Fecha de Nacimiento"> 
+    </div>
+    <div class="col">
+      <input type="text" name="vendedor" value="{{ vendedor }}" class="form-control" placeholder="Vendedor">  
+    </div>
+    <div class="col">
+      <input type="text" name="armador" value="{{ armador }}" class="form-control" placeholder="Armador"> 
+    </div>
+    <div class="col">
+      <input type="text" name="empacador" value="{{ empacador }}" class="form-control" placeholder="Empacador"> 
+    </div>
+    <div class="col">
+      <input type="text" name="cortador" value="{{ cortador }}" class="form-control" placeholder="Cortador">  
+    </div>
+   <div class="col">
+      <input type="text" name="activo="{{ activo }}" class="form-control" placeholder="Activo">
+    </div>
+    <div class="col d-flex align-items-end">
+      <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+      <a href="{% url 'personal_list' %}" class="btn btn-secondary me-2">Limpiar</a>
+      <button type="submit" name="export" value="csv" class="btn btn-success" title="Exportar a Excel">
+        <img src="{% static 'excel-icon.png' %}" alt="Excel" style="width:20px;vertical-align:middle;">
+      </button>
+    </div>
+  </form>
+
+  <a href="{% url 'personal_create' %}" class="btn btn-primary mb-2">Nuevo Personal</a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Nickname</th>
+        <th>Apellido Paterno</th>
+        <th>Apellido Materno</th>
+        <th>Fecha Nacimiento</th>
+        <th>Vendedor</th>
+        <th>Armador</th>
+        <th>Empacador</th>
+        <th>Cortador</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for personal in personal %}
+      <tr>
+        <td>{{ personal.nombre }}</td>
+        <td>{{ personal.nickname }}</td>
+        <td>{{ personal.apellido_paterno }}</td>
+        <td>{{ personal.apellido_materno }}</td>
+        <td>{{ personal.fecha_nacimiento|date:"d/m/y" }}</td>
+        <td>
+            {% if personal.vendedor %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-danger">No</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if personal.armador %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-danger">No</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if personal.empacador %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-danger">No</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if personal.cortador %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-danger">No</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if personal.activo %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-danger">No</span>
+            {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'personal_update' personal.pk %}" class="btn btn-sm btn-warning">Editar</a>
+          <a href="{% url 'personal_delete' personal.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Hilos</h2>
+  <form method="get" class="row mb-3">
+    <div class="col">
+      <input type="text" name="nombre" value="{{ nombre }}" class="form-control" placeholder="Nombre">
+    </div>
+    <div class="col">
+      <input type="text" name="color" value="{{ color }}" class="form-control" placeholder="Color">
+    </div>
+    <div class="col">
+      <input type="text" name="descripcion" value="{{ descripcion }}" class="form-control" placeholder="Descripcion">
+    </div>
+   <div class="col">
+      <input type="text" name="activo="{{ activo }}" class="form-control" placeholder="Activo">
+    </div>
+    <div class="col d-flex align-items-end">
+      <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+      <a href="{% url 'hilos_list' %}" class="btn btn-secondary me-2">Limpiar</a>
+      <button type="submit" name="export" value="csv" class="btn btn-success" title="Exportar a Excel">
+        <img src="{% static 'excel-icon.png' %}" alt="Excel" style="width:20px;vertical-align:middle;">
+      </button>
+    </div>
+  </form>
+
+  <a href="{% url 'hilos_create' %}" class="btn btn-primary mb-2">Nuevo Color</a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Color</th>
+        <th>Descripcion</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hilos in hilos %}
+      <tr>
+        <td>{{ hilos.nombre }}</td>
+        <td>{{ hilos.color }}</td>
+        <td>{{ hilos.descripcion }}</td>
+        <td>
+            {% if hilos.activo %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-danger">No</span>
+            {% endif %}
+        </td>
+        <!-- <th>{{ sucursal.activo|yesno:"Sí,No" }}</th> -->
+        <td>
+          <a href="{% url 'hilos_update' hilos.pk %}" class="btn btn-sm btn-warning">Editar</a>
+          <a href="{% url 'hilos_delete' hilos.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
